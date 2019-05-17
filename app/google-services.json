@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "852326883191",
+    "firebase_url": "https://stayfit-6ca80.firebaseio.com",
+    "project_id": "stayfit-6ca80",
+    "storage_bucket": "stayfit-6ca80.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:852326883191:android:5354c91f782212e3",
+        "android_client_info": {
+          "package_name": "science.logarithmic.stayfit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "852326883191-gg2eci9uo41078vjhcgvscita0dm34ek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJQkSvpBw9JcECutzdJEwv-aTHtUPkMVo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "852326883191-gg2eci9uo41078vjhcgvscita0dm34ek.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">StayFit</string>
+    <!-- Strings related to login -->
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_up">Register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_up_short">Sign up</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="title_activity_sign_up_login">SignUpLogin</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <!-- String related to service -->
+    <string name="notification_subtitle">Counting your steps</string>
+    <string name="ticker_text">Counting your steps</string>
+    <string name="notification_title">StayFit</string>
+    <string name="notification_message">Counting your steps</string>
+    <string name="started">Started tracking</string>
+    <string name="stopped">Stopped tracking</string>
+</resources>
