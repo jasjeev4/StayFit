@@ -1,22 +1,61 @@
 package science.logarithmic.stayfit;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.LocationManager;
-import android.os.Bundle;
+import android.graphics.Color;
+import android.hardware.SensorEventListener;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
-import com.google.android.gms.common.logging.Logger;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 
-public class PedometerService extends Service {
-    private static final int PERM_REQUEST_LOCATION = 1;
+
+/*
+*   Creates a foreground service for tracking steps walked
+*
+ */
+
+
+public class PedometerService extends Service implements SensorEventListener {
+    SensorManager sensorManager;
+    Sensor sSensor;
+    private long steps = 0;
+
+
     public PedometerService() {
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Sensor sensor = event.sensor;
+        float[] values = event.values;
+        int value = -1;
+
+        if (values.length > 0) {
+            value = (int) values[0];
+        }
+
+
+        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            steps++;
+
+            Toast.makeText(this, "Steps: " + steps, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // TODO Auto-generated method stub
     }
 
     @Override
@@ -32,9 +71,12 @@ public class PedometerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
 
-
             showNotification();
             Toast.makeText(this, "Service Started!", Toast.LENGTH_SHORT).show();
+
+            //set up listening for steps
+            sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+            sSensor= sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         } else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
@@ -51,7 +93,19 @@ public class PedometerService extends Service {
         PendingIntent pendingIntent = PendingIntent.getService(this, 0,
                 notificationIntent, 0);
 
-        Notification notification = new NotificationCompat.Builder(this)
+
+        //Create our own notification channel
+        String NOTIFICATION_CHANNEL_ID = "science.logarithmic.stayfit";
+        String channelName = "My Background Service";
+        NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(chan);
+
+        //Display the notification
+        Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getText(R.string.notification_title))
                 .setTicker(getText(R.string.ticker_text))
                 .setContentText(getText(R.string.notification_message))
@@ -69,5 +123,6 @@ public class PedometerService extends Service {
         super.onDestroy();
         Toast.makeText(this, "Stopped tracking!", Toast.LENGTH_SHORT).show();
     }
+
 }
 

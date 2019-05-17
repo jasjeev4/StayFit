@@ -94,7 +94,9 @@ public class SignUpActivity extends AppCompatActivity implements BottomNavigatio
 
 
                                     //Start pedometer service
-
+                                    Intent service = new Intent(SignUpActivity.this, PedometerService.class);
+                                    service.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+                                    startService(service);
 
                                     //updateUI(user);
                                 } else {
