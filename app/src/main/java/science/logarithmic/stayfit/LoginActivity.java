@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
         //Attach the even listener for the navigation view
         navigationView.setOnNavigationItemSelectedListener(this);
         //Set the active tab in the Navigation view
-        navigationView.setSelectedItemId(R.id.navigation_signup);
+        navigationView.setSelectedItemId(R.id.navigation_login);
 
         // Setup firebase authentication
         mAuth = FirebaseAuth.getInstance();
