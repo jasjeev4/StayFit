@@ -54,14 +54,8 @@ public class PedometerService extends Service {
     String NOTIFICATION_CHANNEL_ID = "science.logarithmic.stayfit";
     private int NOTIFICATION_ID = 1;
 
-    private Context context;
 
     public PedometerService() {
-
-    }
-
-    public void setContext(Context c) {
-        this.context = c;
     }
 
     @Override
@@ -74,28 +68,36 @@ public class PedometerService extends Service {
     public void onCreate() {
         super.onCreate();
     }
+
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        // Check service for start or stop
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
 
+            // Show the persistent notification
             showNotification();
-            Toast.makeText(this, "Service Started!", Toast.LENGTH_SHORT).show();
 
+            // Inform the user of the service's start
+            Toast.makeText(this, "Tracking your walking!", Toast.LENGTH_SHORT).show();
 
+            // Make an initial call to trackSteps
             trackSteps();
-            // start tracking steps using a timer that tracks steps walked every 5 seconds
+            // Start tracking steps using a timer that tracks steps walked every 5 seconds
             new java.util.Timer().schedule(
                     new java.util.TimerTask() {
                         @Override
                         public void run() {
-                            // your code here
+                            // Call trackSteps every 5 seconds
                             trackSteps();
                         }
                     },
                     5000
             );
 
-        } else if (intent.getAction().equals(
+        }
+        else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
             stopForeground(true);
             stopSelf();
@@ -105,6 +107,7 @@ public class PedometerService extends Service {
 
     private void trackSteps() {
 
+        // Get the steps walked by the user
         Fitness.getHistoryClient(this, GoogleSignIn.getLastSignedInAccount(this))
                 .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
                 .addOnSuccessListener(
@@ -116,7 +119,7 @@ public class PedometerService extends Service {
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
 
-                                // Do something with the steps
+                                // Process the current step count
                                 processSteps(total);
 
 
@@ -133,10 +136,10 @@ public class PedometerService extends Service {
     }
 
     private void processSteps(long steps) {
-        // get previous step count and last step move from local storage
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-        long prevCount = pref.getLong("step_count", -1); // getting Long
-        long lastMove = pref.getLong("changed", -1); // getting Long
+        // Get previous step count and last step move from local storage
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        long prevCount = pref.getLong("step_count", -1);
+        long lastMove = pref.getLong("changed", -1); //
 
 
         // Check for milestone progress
@@ -163,7 +166,6 @@ public class PedometerService extends Service {
             long now = System.currentTimeMillis();
 
             // Get the difference between the current time and the previous time in milliseconds
-
             long diff = now - lastMove;
 
             final long dayInMilliseconds = 360000;
@@ -181,7 +183,7 @@ public class PedometerService extends Service {
     }
 
     private void checkMilestone(long steps, long prevCount) {
-        // get the difference in step count
+        // Get the difference in step count
         long delta;
         if(steps>prevCount) {
             delta = steps - prevCount;
@@ -193,7 +195,7 @@ public class PedometerService extends Service {
         double feet = delta * STEPS_TO_FEET;
 
 
-        // check for milestone
+        // Check for milestone
         if((milestoneIdx<4) && (feet > milestones[milestoneIdx])) {
             // Set the milestone message
             String msg = "You've walked over " + milestones[milestoneIdx] + " feet!";
@@ -202,6 +204,7 @@ public class PedometerService extends Service {
             builder.setContentText(msg);
             manager.notify(NOTIFICATION_ID, builder.build());
 
+            // Increment to the next milestone
             milestoneIdx++;
         }
     }
@@ -226,7 +229,7 @@ public class PedometerService extends Service {
         assert manager != null;
         manager.createNotificationChannel(chan);
 
-        //Display the notification
+        // Display the notification
         builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getText(R.string.notification_title))
                 .setTicker(getText(R.string.ticker_text))
@@ -234,9 +237,7 @@ public class PedometerService extends Service {
                 .setSmallIcon(R.drawable.ic_dashboard_black_24dp)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true);
-
         notification = builder.build();
-
         manager.notify(NOTIFICATION_ID, notification);
 
         // Start the service in foreground

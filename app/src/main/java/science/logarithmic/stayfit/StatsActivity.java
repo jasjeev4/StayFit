@@ -47,9 +47,6 @@ public class StatsActivity extends AppCompatActivity {
     private static final double STEPS_TO_FEET = 2.5;
     int GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 1;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +56,20 @@ public class StatsActivity extends AppCompatActivity {
         //Initialize TwitterKit
         Twitter.initialize(this);
 
+        // Sign in with Google if not signed in
+        intializeAuthFlow();
+    }
 
+
+    private void intializeAuthFlow() {
+
+        // Set up the Google Fit data to be accessed.
         FitnessOptions fitnessOptions = FitnessOptions.builder()
                 .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
                 .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
                 .build();
 
-        // Sign in with Google if not signed in
+        // Check for permissions from the user's Google account
         if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), fitnessOptions)) {
             GoogleSignIn.requestPermissions(
                     this, // your activity
@@ -79,15 +83,22 @@ public class StatsActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // Access the Pedometer data using Google Fit if authorized or reinitialize the flow.
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == GOOGLE_FIT_PERMISSIONS_REQUEST_CODE) {
                 accessGoogleFit();
             }
+            else {
+                intializeAuthFlow();
+            }
+        }
+        else {
+            intializeAuthFlow();
         }
     }
 
     private void accessGoogleFit() {
-
 
         // Start pedometer service
         Intent service = new Intent(StatsActivity.this, PedometerService.class);
@@ -95,10 +106,9 @@ public class StatsActivity extends AppCompatActivity {
         startService(service);
 
 
-        //set up listening for steps
+        // Set up listening for steps using Google Fit Subscriptions
 
-
-        //For AGGREGATE_STEP_COUNT_DELTA
+        // For AGGREGATE_STEP_COUNT_DELTA
         Fitness.getRecordingClient(this, GoogleSignIn.getLastSignedInAccount(this))
                 .subscribe(DataType.AGGREGATE_STEP_COUNT_DELTA)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -134,7 +144,6 @@ public class StatsActivity extends AppCompatActivity {
 
 
         // The following call returns the daily step count
-
         Fitness.getHistoryClient(this, GoogleSignIn.getLastSignedInAccount(this))
                 .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
                 .addOnSuccessListener(
@@ -165,12 +174,10 @@ public class StatsActivity extends AppCompatActivity {
     private void displayData(long steps) {
         // Convert steps to feet
         // Assuming 1 step equals 2.5 feet
-
         final double feet = steps * STEPS_TO_FEET;
 
 
         // Produce grammatically correct sentences
-
         final String distanceText;
         if(feet == 1) {
             distanceText = "You've walked 1 foot!";
@@ -195,17 +202,15 @@ public class StatsActivity extends AppCompatActivity {
 
 
         // Tweet button listener
-
         Button clickButton = (Button) findViewById(R.id.tweet);
         clickButton.setOnClickListener( new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // Compose tweet
-
-                TweetComposer.Builder builder = new TweetComposer.Builder(v.getContext())
+                TweetComposer.Builder tweetBuilder = new TweetComposer.Builder(v.getContext())
                         .text("I've walked " + feet + " feet today! - StayFit");
-                builder.show();
+                tweetBuilder.show();
             }
         });
     }

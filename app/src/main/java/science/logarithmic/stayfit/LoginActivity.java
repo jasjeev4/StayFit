@@ -19,7 +19,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+// Logging in is supported by Firebase
+
 public class LoginActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+
+
+    // Use Firebase to login a user using a username which is made into a mock email
 
     private FirebaseAuth mAuth;
     private static final String TAG = "LoginActivity";
@@ -27,14 +32,15 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
 
     private BottomNavigationView navigationView;
 
+
+    // Handle the bottom navigation's clicks
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_login:
                 return true;
             case R.id.navigation_signup:
-                Toast.makeText(LoginActivity.this, "Clicked signup",
-                        Toast.LENGTH_SHORT).show();
+                // Switch to signup page
                 Intent myIntent = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(myIntent);
                 return true;
@@ -47,9 +53,13 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        navigationView = findViewById(R.id.nav_view);
+        // Set up the listener for the navigation view
+        //Attach the even listener for the navigation view
         navigationView.setOnNavigationItemSelectedListener(this);
+        //Set the active tab in the Navigation view
+        navigationView.setSelectedItemId(R.id.navigation_signup);
 
+        // Setup firebase authentication
         mAuth = FirebaseAuth.getInstance();
 
         // Views to be accessed
@@ -75,13 +85,12 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
                 //Convert username to a mock email for Firebase authentication
                 String email = username + emaildomain;
 
-                //Attempt to login with firebase. Might only accept emails.
+                //Attempt to login with Firebase. Might only accept emails.
                 mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     Toast.makeText(LoginActivity.this, "Logged in",
@@ -97,10 +106,8 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
                                     Log.d(TAG, "signInWithEmail:failure", task.getException());
                                     Toast.makeText(LoginActivity.this, task.getException().getMessage(),
                                             Toast.LENGTH_SHORT).show();
-                                    //updateUI(null);
-                                }
 
-                                // ...
+                                }
                             }
                         });
             }

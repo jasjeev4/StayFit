@@ -20,6 +20,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+// Signing up is supported by Firebase
+
 public class SignUpActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
 
     private FirebaseAuth mAuth;
@@ -29,10 +31,12 @@ public class SignUpActivity extends AppCompatActivity implements BottomNavigatio
     private BottomNavigationView navigationView;
 
 
+    // Handle the bottom navigation's clicks
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_login:
+                // Switch to login page
                 Intent myIntent = new Intent(SignUpActivity.this, LoginActivity.class);
                 startActivity(myIntent);
                 return true;
@@ -47,12 +51,14 @@ public class SignUpActivity extends AppCompatActivity implements BottomNavigatio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        // Set up the listener for the navigation view
         navigationView = findViewById(R.id.nav_view);
         //Attach the even listener for the navigation view
         navigationView.setOnNavigationItemSelectedListener(this);
         //Set the active tab in the Navigation view
         navigationView.setSelectedItemId(R.id.navigation_signup);
 
+        // Setup firebase authentication
         mAuth = FirebaseAuth.getInstance();
 
         // Views to be accessed
@@ -60,7 +66,6 @@ public class SignUpActivity extends AppCompatActivity implements BottomNavigatio
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
         final EditText userEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
-
 
 
 
@@ -86,28 +91,25 @@ public class SignUpActivity extends AppCompatActivity implements BottomNavigatio
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
+
+                                    // Toast message to say the user has logged in
                                     Toast.makeText(SignUpActivity.this, "Logged in",
                                             Toast.LENGTH_SHORT).show();
-
-                                    //Set up SQL lite DB
-
 
                                     //Start pedometer service
                                     Intent service = new Intent(SignUpActivity.this, PedometerService.class);
                                     service.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
                                     startService(service);
 
-                                    //updateUI(user);
+                                    // Change to stats page
+                                    Intent myIntent = new Intent(SignUpActivity.this, StatsActivity.class);
+                                    startActivity(myIntent);
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.d(TAG, "signInWithEmail:failure", task.getException());
                                     Toast.makeText(SignUpActivity.this, "Authentication failed.",
                                             Toast.LENGTH_SHORT).show();
-                                    //updateUI(null);
                                 }
-
-                                // ...=
                             }
                         });
             }

@@ -1,5 +1,8 @@
 package science.logarithmic.stayfit;
 
+
+// This class contains constants used for running a Foreground activity
+
 public class Constants {
     public interface ACTION {
         public static String MAIN_ACTION = "science.logarithmic.action.main";
