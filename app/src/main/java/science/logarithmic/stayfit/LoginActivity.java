@@ -87,11 +87,6 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
                                     Toast.makeText(LoginActivity.this, "Logged in",
                                             Toast.LENGTH_SHORT).show();
 
-                                    // Start pedometer service
-                                    Intent service = new Intent(LoginActivity.this, PedometerService.class);
-                                    service.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-                                    startService(service);
-
                                     // Change to stats page
                                     Intent myIntent = new Intent(LoginActivity.this, StatsActivity.class);
                                     startActivity(myIntent);

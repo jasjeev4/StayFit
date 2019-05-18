@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.SensorEventListener;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import android.content.Context;
@@ -19,6 +21,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 
 /*
 *   Creates a foreground service for tracking steps walked
@@ -26,36 +34,12 @@ import android.hardware.SensorManager;
  */
 
 
-public class PedometerService extends Service implements SensorEventListener {
-    SensorManager sensorManager;
-    Sensor sSensor;
-    private long steps = 0;
+public class PedometerService extends Service {
 
+    private static final String TAG = "PedometerService";
 
     public PedometerService() {
-    }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        Sensor sensor = event.sensor;
-        float[] values = event.values;
-        int value = -1;
-
-        if (values.length > 0) {
-            value = (int) values[0];
-        }
-
-
-        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            steps++;
-
-            Toast.makeText(this, "Steps: " + steps, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -63,6 +47,7 @@ public class PedometerService extends Service implements SensorEventListener {
         // Used only in case if services are bound (Bound Services).
         return null;
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -74,9 +59,6 @@ public class PedometerService extends Service implements SensorEventListener {
             showNotification();
             Toast.makeText(this, "Service Started!", Toast.LENGTH_SHORT).show();
 
-            //set up listening for steps
-            sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
-            sSensor= sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         } else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
@@ -118,6 +100,7 @@ public class PedometerService extends Service implements SensorEventListener {
                 notification);
 
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
