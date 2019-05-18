@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity implements BottomNavigation
         setContentView(R.layout.activity_login);
 
         // Set up the listener for the navigation view
+        navigationView = findViewById(R.id.nav_view);
         //Attach the even listener for the navigation view
         navigationView.setOnNavigationItemSelectedListener(this);
         //Set the active tab in the Navigation view
