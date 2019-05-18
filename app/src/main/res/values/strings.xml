@@ -23,4 +23,8 @@
     <string name="notification_message">Counting your steps</string>
     <string name="started">Started tracking</string>
     <string name="stopped">Stopped tracking</string>
+
+    <!-- Twitter -->
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">i4dCE7XqLIlP3GUIQtN8Ip80K</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">i4dCE7XqLIlP3GUIQtN8Ip80K</string>
 </resources>

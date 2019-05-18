@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -26,6 +28,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.text.DateFormat;
 import java.text.Format;
@@ -52,11 +56,16 @@ public class StatsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_stats);
 
 
+        //Initialize TwitterKit
+        Twitter.initialize(this);
+
+
         FitnessOptions fitnessOptions = FitnessOptions.builder()
                 .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
                 .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
                 .build();
 
+        // Sign in with Google if not signed in
         if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), fitnessOptions)) {
             GoogleSignIn.requestPermissions(
                     this, // your activity
@@ -136,7 +145,10 @@ public class StatsActivity extends AppCompatActivity {
                                         dataSet.isEmpty()
                                                 ? 0
                                                 : dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
+
+                                // Display the step count as needed
                                 displayData(total);
+
                                 Log.i(LOG_TAG, "Total steps: " + total);
                             }
                         })
@@ -154,10 +166,25 @@ public class StatsActivity extends AppCompatActivity {
         // Convert steps to feet
         // Assuming 1 step equals 2.5 feet
 
-        double feet = steps * STEPS_TO_FEET;
+        final double feet = steps * STEPS_TO_FEET;
 
-        String distanceText = "You've walked " +  feet + " feet!";
-        String stepsText = "That's " + steps + " steps.";
+
+        // Produce grammatically correct sentences
+
+        final String distanceText;
+        if(feet == 1) {
+            distanceText = "You've walked 1 foot!";
+        }
+        else {
+            distanceText = "You've walked " +  feet + " feet today!";
+        }
+        final String stepsText;
+        if(steps == 1) {
+            stepsText = "That's 1 step.";
+        }
+        else {
+            stepsText = "That's " + steps + " steps.";
+        }
 
 
         // Set the text on the TextViews
@@ -165,6 +192,22 @@ public class StatsActivity extends AppCompatActivity {
         distanceView.setText(distanceText);
         TextView stepView = (TextView) findViewById(R.id.steps);
         stepView.setText(stepsText);
+
+
+        // Tweet button listener
+
+        Button clickButton = (Button) findViewById(R.id.tweet);
+        clickButton.setOnClickListener( new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Compose tweet
+
+                TweetComposer.Builder builder = new TweetComposer.Builder(v.getContext())
+                        .text("I've walked " + feet + " feet today! - StayFit");
+                builder.show();
+            }
+        });
     }
 }
 
